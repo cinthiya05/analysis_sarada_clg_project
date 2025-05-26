@@ -1,4 +1,3 @@
-// src/layouts/MainLayout.jsx
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -16,12 +15,13 @@ import {
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SchoolIcon from '@mui/icons-material/School';
-
+import ChatIcon from '@mui/icons-material/Chat';
 const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Students', icon: <SchoolIcon />, path: '/students' },
+  { text: 'Talk To Students', icon: <ChatIcon />, path: '/talk-to-students' },
 ];
 
 export default function MainLayout() {
@@ -32,7 +32,6 @@ export default function MainLayout() {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
 
-      {/* Top App Bar */}
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
@@ -41,7 +40,6 @@ export default function MainLayout() {
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar Drawer */}
       <Drawer
         variant="permanent"
         sx={{
@@ -54,11 +52,7 @@ export default function MainLayout() {
         <Box sx={{ overflow: 'auto' }}>
           <List>
             {menuItems.map(({ text, icon, path }) => (
-              <ListItem
-                key={text}
-                disablePadding
-                selected={location.pathname === path}
-              >
+              <ListItem key={text} disablePadding selected={location.pathname === path}>
                 <ListItemButton onClick={() => navigate(path)}>
                   <ListItemIcon>{icon}</ListItemIcon>
                   <ListItemText primary={text} />
@@ -69,13 +63,8 @@ export default function MainLayout() {
         </Box>
       </Drawer>
 
-      {/* Main content */}
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
-      >
+      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
         <Toolbar />
-        {/* Render matched route */}
         <Outlet />
       </Box>
     </Box>
