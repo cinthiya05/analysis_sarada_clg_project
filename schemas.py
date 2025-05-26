@@ -81,9 +81,9 @@ class FullStudentCreate(BaseModel):
 
 class FullStudentResponse(BaseModel):
     student: StudentDataSchema
-    info: StudentInfoSchema
-    sem_info: Optional[StudentSemInfoSchema]
-    record: StudentRecordSchema
+    info: Optional[StudentInfoSchema] = None
+    sem_info: Optional[StudentSemInfoSchema] = None
+    record: Optional[StudentRecordSchema] = None  # <-- Changed from List to single object
 
     model_config = ConfigDict(from_attributes=True)
 

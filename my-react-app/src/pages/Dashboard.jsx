@@ -6,119 +6,254 @@ import {
   Button,
   Box,
   Grid,
-  Paper,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SchoolIcon from '@mui/icons-material/School';
 import ChatIcon from '@mui/icons-material/Chat';
+
 import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend as ChartLegend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+} from 'chart.js';
+import { Pie, Bar, Line } from 'react-chartjs-2';
 
-const departmentData = [
-  { department: 'CSE', passed: 90, failed: 10 },
-  { department: 'ECE', passed: 80, failed: 20 },
-  { department: 'MECH', passed: 70, failed: 30 },
-  { department: 'CIVIL', passed: 60, failed: 40 },
-];
+ChartJS.register(
+  ArcElement,
+  ChartTooltip,
+  ChartLegend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement
+);
 
-const pieData = [
-  { name: 'Passed', value: 300 },
-  { name: 'Failed', value: 100 },
-];
+// Chart Data
+const pieChartData = {
+  labels: ['Passed', 'Failed'],
+  datasets: [
+    {
+      data: [300, 100],
+      backgroundColor: ['#66bb6a', '#ef5350'],
+      borderColor: ['#388e3c', '#c62828'],
+      borderWidth: 2,
+    },
+  ],
+};
 
-const COLORS = ['#4caf50', '#f44336'];
+const barChartData = {
+  labels: ['CSE', 'ECE', 'MECH', 'CIVIL'],
+  datasets: [
+    {
+      label: 'Passed',
+      data: [90, 80, 70, 60],
+      backgroundColor: '#4caf50',
+    },
+    {
+      label: 'Failed',
+      data: [10, 20, 30, 40],
+      backgroundColor: '#f44336',
+    },
+  ],
+};
+
+const lineChartData = {
+  labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+  datasets: [
+    {
+      label: 'Average CGPA',
+      data: [7.5, 7.8, 8.0, 8.3],
+      borderColor: '#1976d2',
+      backgroundColor: 'rgba(25, 118, 210, 0.2)',
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: '#1976d2',
+      pointRadius: 5,
+    },
+  ],
+};
+
+const deptCountData = {
+  labels: ['CSE', 'ECE', 'MECH', 'CIVIL'],
+  datasets: [
+    {
+      label: 'Total Students',
+      data: [120, 100, 85, 70],
+      backgroundColor: '#42a5f5',
+    },
+  ],
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ padding: 4, background: 'linear-gradient(to right, #e3f2fd, #ffffff)', minHeight: '100vh' }}>
-      <Typography variant="h3" align="center" sx={{ fontWeight: 'bold', mb: 4, color: '#1976d2' }}>
+    <Box
+      sx={{
+        padding: 4,
+        background: 'linear-gradient(to right, #e3f2fd, #ffffff)',
+        minHeight: '100vh',
+      }}
+    >
+      <Typography
+        variant="h3"
+        align="center"
+        sx={{ fontWeight: 'bold', mb: 4, color: '#1976d2' }}
+      >
         🎓 Student Management Dashboard
       </Typography>
 
-      <Grid container spacing={4} justifyContent="center">
-        <Grid item>
-          <Card sx={{ width: 320, height: 230, borderRadius: 4, background: 'linear-gradient(145deg, #ffffff, #e3f2fd)', boxShadow: 6, '&:hover': { transform: 'scale(1.05)' }, transition: 'transform 0.2s ease-in-out' }}>
-            <CardContent>
-              <Typography variant="h6" color="primary" gutterBottom>
-                📊 Student Records
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 3 }}>
-                Use the student form to add or view student data in your system.
-              </Typography>
-              <Button fullWidth variant="contained" startIcon={<SchoolIcon />} onClick={() => navigate('/students')} sx={{ textTransform: 'none', fontWeight: 'bold' }}>
-                Go to Student Form
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item>
-          <Card sx={{ width: 320, height: 230, borderRadius: 4, background: 'linear-gradient(145deg, #ffffff, #fce4ec)', boxShadow: 6, '&:hover': { transform: 'scale(1.05)' }, transition: 'transform 0.2s ease-in-out' }}>
-            <CardContent>
-              <Typography variant="h6" color="error" gutterBottom>
-                💬 Talk to Students
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 3 }}>
-                Chat with students and answer common academic questions.
-              </Typography>
-              <Button fullWidth variant="contained" color="error" startIcon={<ChatIcon />} onClick={() => navigate('/talk-to-students')} sx={{ textTransform: 'none', fontWeight: 'bold' }}>
-                Open Chat
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
+      {/* Action Cards */}
+      <Grid container spacing={4} justifyContent="center" mb={4}>
+        {[{
+          title: '📊 Student Records',
+          description: 'Use the student form to add or view student data in your system.',
+          buttonText: 'Go to Student Form',
+          icon: <SchoolIcon />,
+          navigateTo: '/students',
+          color: 'primary',
+          background: 'linear-gradient(145deg, #ffffff, #e3f2fd)',
+        }, {
+          title: '💬 Talk to Students',
+          description: 'Chat with students and answer common academic questions.',
+          buttonText: 'Open Chat',
+          icon: <ChatIcon />,
+          navigateTo: '/talk-to-students',
+          color: 'error',
+          background: 'linear-gradient(145deg, #ffffff, #fce4ec)',
+        }].map((card, index) => (
+          <Grid item key={index}>
+            <Card
+              sx={{
+                width: 320,
+                height: 230,
+                borderRadius: 4,
+                background: card.background,
+                boxShadow: 6,
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: 10,
+                },
+                transition: 'all 0.3s ease-in-out',
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" color={card.color} gutterBottom>
+                  {card.title}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 3 }}>
+                  {card.description}
+                </Typography>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color={card.color}
+                  startIcon={card.icon}
+                  onClick={() => navigate(card.navigateTo)}
+                  sx={{ textTransform: 'none', fontWeight: 'bold' }}
+                >
+                  {card.buttonText}
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
 
-      {/* Charts Section */}
-      <Grid container spacing={4} mt={6}>
-        {/* Bar Chart */}
-        <Grid item xs={12} md={7}>
-          <Paper sx={{ p: 3, height: 400 }}>
+      {/* Charts - Full width one below the other */}
+      <Grid container spacing={4} direction="column" alignItems="center">
+        {/* Chart 1: Bar Chart */}
+        <Grid item xs={12}>
+          <Card sx={{ p: 3, height: 370, maxWidth: 900, width: '100%' }}>
             <Typography variant="h6" gutterBottom>
-              📈 Department-wise Pass/Fail Count
+              📊 Department-wise Pass/Fail
             </Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <BarChart data={departmentData}>
-                <XAxis dataKey="department" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="passed" stackId="a" fill="#4caf50" name="Passed" />
-                <Bar dataKey="failed" stackId="a" fill="#f44336" name="Failed" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Paper>
+            <Bar
+              data={barChartData}
+              options={{
+                responsive: true,
+                plugins: { legend: { position: 'right' }},
+              }}
+            />
+          </Card>
         </Grid>
 
-        {/* Pie Chart */}
-        <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 3, height: 400 }}>
+        {/* Chart 2: Pie Chart */}
+        <Grid item xs={12}>
+          <Card
+            sx={{
+              p: 3,
+              height: 370,
+              maxWidth: 900,
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="h6" gutterBottom>
               🥧 Overall Pass/Fail Ratio
             </Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={120} label>
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </Paper>
+            <Box sx={{ height: 250, width: 250 }}>
+              <Pie
+                data={pieChartData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                      labels: {
+                        boxWidth: 20,
+                        padding: 10,
+                      },
+                    },
+                  },
+                }}
+              />
+            </Box>
+          </Card>
+        </Grid>
+
+        {/* Chart 3: Line Chart */}
+        <Grid item xs={12}>
+          <Card sx={{ p: 3, height: 370, maxWidth: 900, width: '100%' }}>
+            <Typography variant="h6" gutterBottom>
+              📈 CGPA Trend
+            </Typography>
+            <Line
+              data={lineChartData}
+              options={{
+                responsive: true,
+                plugins: { legend: { position: 'right' } },
+              }}
+            />
+          </Card>
+        </Grid>
+
+        {/* Chart 4: Horizontal Bar Chart */}
+        <Grid item xs={12}>
+          <Card sx={{ p: 3, height: 370, maxWidth: 900, width: '100%' }}>
+            <Typography variant="h6" gutterBottom>
+              🧮 Students per Department
+            </Typography>
+            <Bar
+              data={deptCountData}
+              options={{
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { position: 'right' } },
+              }}
+            />
+          </Card>
         </Grid>
       </Grid>
     </Box>

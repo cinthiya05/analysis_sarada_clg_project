@@ -85,14 +85,16 @@ def get_all_students(db: Session = Depends(get_db)):
     if not students:
         raise HTTPException(status_code=404, detail="No students found")
 
-    return [
-        FullStudentResponse.model_validate({
+    result = []
+    for s in students:
+        result.append(FullStudentResponse.model_validate({
             "student": s,
             "info": s.info,
             "sem_info": s.sem_infos[0] if s.sem_infos else None,
-            "record": s.record
-        }) for s in students
-    ]
+            "record": s.record if s.record else None  # ❗ Fixed: pass object not list
+        }))
+
+    return result
 
 
 @router.put("/students/{student_id}", response_model=FullStudentResponse)
@@ -130,6 +132,7 @@ def update_full_student(
         "record": db_record
     })
 
+
 @router.delete("/students/{student_id}", response_model=dict)
 def delete_full_student(student_id: int, db: Session = Depends(get_db)):
     db_student = db.query(StudentData).filter(StudentData.student_id == student_id).first()
@@ -138,12 +141,10 @@ def delete_full_student(student_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Student not found")
 
     try:
-        # Delete related records first to avoid foreign key constraint errors
         db.query(StudentSemInfo).filter(StudentSemInfo.student_id == student_id).delete()
         db.query(StudentInfo).filter(StudentInfo.student_id == student_id).delete()
         db.query(StudentRecord).filter(StudentRecord.student_id == student_id).delete()
         db.delete(db_student)
-
         db.commit()
 
         return {"message": f"Student with ID {student_id} and related records deleted successfully."}
