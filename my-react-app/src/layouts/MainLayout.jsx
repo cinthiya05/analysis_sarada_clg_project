@@ -16,12 +16,16 @@ import {
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SchoolIcon from '@mui/icons-material/School';
 import ChatIcon from '@mui/icons-material/Chat';
+import BarChartIcon from '@mui/icons-material/BarChart';
+// Then use: icon: <BarChartIcon />
+
 const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Students', icon: <SchoolIcon />, path: '/students' },
   { text: 'Talk To Students', icon: <ChatIcon />, path: '/talk-to-students' },
+  { text: 'Student Stats', icon: <SchoolIcon />, path: '/student-stats' },
 ];
 
 export default function MainLayout() {

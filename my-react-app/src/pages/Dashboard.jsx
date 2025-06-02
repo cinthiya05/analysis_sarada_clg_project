@@ -91,6 +91,22 @@ const deptCountData = {
   ],
 };
 
+const chartCardStyles = {
+  p: 2,
+  height: 230,
+  width: 320,
+  borderRadius: 4,
+  boxShadow: 4,
+  backgroundColor: '#ffffff',
+  transition: 'transform 0.3s ease',
+  display: 'flex',
+  flexDirection: 'column',
+  '&:hover': {
+    transform: 'scale(1.01)',
+    boxShadow: 8,
+  },
+};
+
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -112,23 +128,38 @@ export default function Dashboard() {
 
       {/* Action Cards */}
       <Grid container spacing={4} justifyContent="center" mb={4}>
-        {[{
-          title: '📊 Student Records',
-          description: 'Use the student form to add or view student data in your system.',
-          buttonText: 'Go to Student Form',
-          icon: <SchoolIcon />,
-          navigateTo: '/students',
-          color: 'primary',
-          background: 'linear-gradient(145deg, #ffffff, #e3f2fd)',
-        }, {
-          title: '💬 Talk to Students',
-          description: 'Chat with students and answer common academic questions.',
-          buttonText: 'Open Chat',
-          icon: <ChatIcon />,
-          navigateTo: '/talk-to-students',
-          color: 'error',
-          background: 'linear-gradient(145deg, #ffffff, #fce4ec)',
-        }].map((card, index) => (
+        {[
+          {
+            title: '📊 Student Records',
+            description:
+              'Use the student form to add or view student data in your system.',
+            buttonText: 'Go to Student Form',
+            icon: <SchoolIcon />,
+            navigateTo: '/students',
+            color: 'primary',
+            background: 'linear-gradient(145deg, #ffffff, #e3f2fd)',
+          },
+          {
+            title: '💬 Talk to Students',
+            description:
+              'Chat with students and answer common academic questions.',
+            buttonText: 'Open Chat',
+            icon: <ChatIcon />,
+            navigateTo: '/talk-to-students',
+            color: 'error',
+            background: 'linear-gradient(145deg, #ffffff, #fce4ec)',
+          },
+          {
+            title: '📈 Students Stats',
+            description:
+              'View detailed statistics about student performance and enrollment.',
+            buttonText: 'View Stats',
+            icon: <SchoolIcon />,
+            navigateTo: '/student-stats',
+            color: 'secondary',
+            background: 'linear-gradient(145deg, #ffffff, #ede7f6)',
+          },
+        ].map((card, index) => (
           <Grid item key={index}>
             <Card
               sx={{
@@ -167,95 +198,124 @@ export default function Dashboard() {
         ))}
       </Grid>
 
-      {/* Charts - Full width one below the other */}
-      <Grid container spacing={4} direction="column" alignItems="center">
-        {/* Chart 1: Bar Chart */}
-        <Grid item xs={12}>
-          <Card sx={{ p: 3, height: 370, maxWidth: 900, width: '100%' }}>
-            <Typography variant="h6" gutterBottom>
-              📊 Department-wise Pass/Fail
-            </Typography>
+      {/* Chart Cards in a single row */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 4,
+          flexWrap: 'wrap',
+          overflowX: 'auto',
+          paddingBottom: 2,
+          '&::-webkit-scrollbar': { height: 8 },
+          '&::-webkit-scrollbar-thumb': { backgroundColor: '#90caf9', borderRadius: 4 },
+        }}
+      >
+        {/* Bar Chart */}
+        <Card sx={chartCardStyles}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            align="center"
+            sx={{ fontWeight: 'bold', color: '#1976d2' }}
+          >
+            📊 Department-wise Pass/Fail
+          </Typography>
+          <Box sx={{ flexGrow: 1 }}>
             <Bar
               data={barChartData}
               options={{
                 responsive: true,
-                plugins: { legend: { position: 'right' }},
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right' } },
+                layout: { padding: 10 },
               }}
+              height={140}
             />
-          </Card>
-        </Grid>
+          </Box>
+        </Card>
 
-        {/* Chart 2: Pie Chart */}
-        <Grid item xs={12}>
-          <Card
-            sx={{
-              p: 3,
-              height: 370,
-              maxWidth: 900,
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+        {/* Pie Chart */}
+        <Card sx={chartCardStyles}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            align="center"
+            sx={{ fontWeight: 'bold', color: '#1976d2' }}
           >
-            <Typography variant="h6" gutterBottom>
-              🥧 Overall Pass/Fail Ratio
-            </Typography>
-            <Box sx={{ height: 250, width: 250 }}>
-              <Pie
-                data={pieChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: 'bottom',
-                      labels: {
-                        boxWidth: 20,
-                        padding: 10,
-                      },
+            🥧 Overall Pass/Fail Ratio
+          </Typography>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Pie
+              data={pieChartData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: {
+                      boxWidth: 20,
+                      padding: 10,
                     },
                   },
-                }}
-              />
-            </Box>
-          </Card>
-        </Grid>
+                },
+              }}
+              height={160}
+              width={160}
+            />
+          </Box>
+        </Card>
 
-        {/* Chart 3: Line Chart */}
-        <Grid item xs={12}>
-          <Card sx={{ p: 3, height: 370, maxWidth: 900, width: '100%' }}>
-            <Typography variant="h6" gutterBottom>
-              📈 CGPA Trend
-            </Typography>
+        {/* Line Chart */}
+        <Card sx={chartCardStyles}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            align="center"
+            sx={{ fontWeight: 'bold', color: '#1976d2' }}
+          >
+            📈 CGPA Trend
+          </Typography>
+          <Box sx={{ flexGrow: 1 }}>
             <Line
               data={lineChartData}
               options={{
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { position: 'right' } },
+                layout: { padding: 10 },
               }}
+              height={140}
             />
-          </Card>
-        </Grid>
+          </Box>
+        </Card>
 
-        {/* Chart 4: Horizontal Bar Chart */}
-        <Grid item xs={12}>
-          <Card sx={{ p: 3, height: 370, maxWidth: 900, width: '100%' }}>
-            <Typography variant="h6" gutterBottom>
-              🧮 Students per Department
-            </Typography>
+        {/* Horizontal Bar Chart */}
+        <Card sx={chartCardStyles}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            align="center"
+            sx={{ fontWeight: 'bold', color: '#1976d2' }}
+          >
+            🧮 Students per Department
+          </Typography>
+          <Box sx={{ flexGrow: 1 }}>
             <Bar
               data={deptCountData}
               options={{
                 indexAxis: 'y',
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { position: 'right' } },
+                layout: { padding: 10 },
               }}
+              height={140}
             />
-          </Card>
-        </Grid>
-      </Grid>
+          </Box>
+        </Card>
+      </Box>
     </Box>
   );
 }

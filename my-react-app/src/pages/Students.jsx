@@ -10,6 +10,7 @@ import {
   TrendingUp, Filter9Plus, CheckCircle, Grade, Subject, Assessment,
   FamilyRestroom, Work, CreditCard, AccountBalance, Group, Public
 } from '@mui/icons-material';
+import { createStudent } from '../api/studentapi';
 
 export default function Students() {
   const [activeStep, setActiveStep] = useState(0);
@@ -61,27 +62,22 @@ export default function Students() {
   const handleBack = () => setActiveStep(prev => prev - 1);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('http://localhost:8000/student_full/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          student,
-          info,
-          sem_info: semInfo,
-          record
-        }),
-      });
+  e.preventDefault();
+  try {
+    const data = {
+      student,
+      info,
+      sem_info: semInfo,
+      record
+    };
 
-      const result = await res.json();
-      alert('✅ Student Created: ' + JSON.stringify(result));
-    } catch (error) {
-      console.error(error);
-      alert('❌ Error submitting student data');
-    }
-  };
-
+    const result = await createStudent(data);
+    alert('✅ Student Created: ' + JSON.stringify(result));
+  } catch (error) {
+    console.error(error);
+    alert('❌ Error submitting student data');
+  }
+};
   const steps = ['Basic Info', 'Additional Info', 'Semester Info', 'Family & Personal Info'];
 
   return (
