@@ -63,3 +63,5 @@ class StudentRecord(Base):
     nationality = Column(String(50))
 
     student = relationship("StudentData", back_populates="record")
+
+

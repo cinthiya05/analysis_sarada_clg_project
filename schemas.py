@@ -1,6 +1,9 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+
 from typing import Optional
 from datetime import date
+from typing import List
+from pydantic import BaseModel, EmailStr, ConfigDict, RootModel
+
 
 # --- StudentData ---
 
@@ -95,3 +98,6 @@ class FullStudentUpdate(BaseModel):
     info: StudentInfoCreate
     sem_info: StudentSemInfoCreate
     record: StudentRecordCreate
+
+class StudentFullBulkCreate(RootModel[List[FullStudentCreate]]):
+    pass

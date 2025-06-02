@@ -2,13 +2,47 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError
 from database import get_db
+from typing import List
+from sqlalchemy import func
 from models import StudentData, StudentInfo, StudentSemInfo, StudentRecord
 from schemas import (
     FullStudentCreate, FullStudentResponse, FullStudentUpdate,
-    StudentDataSchema, StudentInfoSchema, StudentSemInfoSchema, StudentRecordSchema
+    StudentDataSchema, StudentInfoSchema, StudentSemInfoSchema, StudentRecordSchema,StudentFullBulkCreate
 )
 
 router = APIRouter()
+
+
+@router.post("/students/bulk/", status_code=201)
+def create_students_bulk(
+    payload: StudentFullBulkCreate, 
+    db: Session = Depends(get_db)
+):
+    created_ids = []
+
+    for entry in payload.__root__:
+        student_dict = entry.student.dict()
+        new_student = StudentData(**student_dict)
+        db.add(new_student)
+        db.commit()
+        db.refresh(new_student)
+
+        info_dict = entry.info.dict()
+        new_info = StudentInfo(student_id=new_student.student_id, **info_dict)
+        db.add(new_info)
+
+        sem_dict = entry.sem_info.dict()
+        new_sem = StudentSemInfo(student_id=new_student.student_id, student_info_id=new_info.student_info_id, **sem_dict)
+        db.add(new_sem)
+
+        record_dict = entry.record.dict()
+        new_record = StudentRecord(student_id=new_student.student_id, **record_dict)
+        db.add(new_record)
+
+        db.commit()
+        created_ids.append(new_student.student_id)
+
+    return {"inserted_student_ids": created_ids}
 
 @router.post("/student_full/", response_model=dict)
 def create_full_student(payload: FullStudentCreate, db: Session = Depends(get_db)):
@@ -152,3 +186,43 @@ def delete_full_student(student_id: int, db: Session = Depends(get_db)):
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Deletion failed: {str(e)}")
+
+@router.get("/student_data/", response_model=List[StudentDataSchema])
+def read_all_student_data(db: Session = Depends(get_db)):
+    return db.query(StudentData).all()
+
+
+@router.get("/graph/all-charts")
+async def get_all_chart_data():
+    # Bar Chart: department-wise pass/fail data
+    bar_chart_data = [
+        {"department": "CSE", "passed": 80, "failed": 10},
+        {"department": "ECE", "passed": 70, "failed": 20},
+        {"department": "MECH", "passed": 65, "failed": 15},
+        {"department": "CIVIL", "passed": 50, "failed": 25},
+    ]
+
+    # Pie Chart: overall pass/fail ratio
+    pie_chart_data = {
+        "passed": 265,
+        "failed": 70,
+    }
+
+    # Line Chart: average CGPA over semesters
+    line_chart_data = {
+        "semesters": ["Sem 1", "Sem 2", "Sem 3", "Sem 4"],
+        "average_cgpa": [7.5, 7.8, 8.0, 8.3],
+    }
+
+    # Horizontal Bar Chart: total students per department
+    horizontal_bar_chart_data = {
+        "departments": ["CSE", "ECE", "MECH", "CIVIL"],
+        "student_counts": [90, 90, 80, 75],
+    }
+
+    return {
+        "bar_chart": bar_chart_data,
+        "pie_chart": pie_chart_data,
+        "line_chart": line_chart_data,
+        "horizontal_bar_chart": horizontal_bar_chart_data,
+    }
